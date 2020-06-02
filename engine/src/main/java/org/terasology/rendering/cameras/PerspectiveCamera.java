@@ -1,18 +1,5 @@
-/*
- * Copyright 2017 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.rendering.cameras;
 
 import org.joml.Matrix4f;
@@ -147,7 +134,8 @@ public class PerspectiveCamera extends SubmersibleCamera implements PropertyChan
         viewingDirection.cross(up, tempRightVector);
         tempRightVector.mul(bobbingRotationOffsetFactor);
 
-        projectionMatrix = createPerspectiveProjectionMatrix(fov, getzNear(), getzFar(),this.displayDevice);
+        createPerspectiveProjectionMatrix(fov, getzNear(), getzFar(), this.displayDevice, jomlProjectionMatrix);
+        jomlProjectionMatrix.transpose(projectionMatrix);
 
         viewMatrix = MatrixUtils.createViewMatrix(0f, bobbingVerticalOffsetFactor * 2.0f, 0f, viewingDirection.x, viewingDirection.y + bobbingVerticalOffsetFactor * 2.0f,
                 viewingDirection.z, up.x + tempRightVector.x, up.y + tempRightVector.y, up.z + tempRightVector.z);
@@ -192,11 +180,11 @@ public class PerspectiveCamera extends SubmersibleCamera implements PropertyChan
     }
 
     // TODO: Move the dependency on LWJGL (Display) elsewhere
-    private static Matrix4f createPerspectiveProjectionMatrix(float fov, float zNear, float zFar, DisplayDevice displayDevice) {
-        float aspectRatio = (float) displayDevice.getDisplayWidth()/ displayDevice.getDisplayHeight();
+    private static void createPerspectiveProjectionMatrix(float fov, float zNear, float zFar, DisplayDevice displayDevice, Matrix4f dest) {
+        float aspectRatio = (float) displayDevice.getDisplayWidth() / displayDevice.getDisplayHeight();
         float fovY = (float) (2 * Math.atan2(Math.tan(0.5 * fov * TeraMath.DEG_TO_RAD), aspectRatio));
 
-        return new Matrix4f().perspective(fovY,aspectRatio,zNear,zFar).transpose();
+        dest.setPerspective(fovY, aspectRatio, zNear, zFar);
     }
 
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
