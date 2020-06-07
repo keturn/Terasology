@@ -6,6 +6,8 @@ package org.terasology.logistics.gooky
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.options.flag
+import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.file
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.MergeCommand
@@ -66,6 +68,8 @@ class Release: CliktCommand(help = """
 
     val dir by argument(name="directory", help="the directory containing the module source").file(mustExist = true, canBeFile = false)
 
+    val push by option("--push", "-p", help="push the release commits").flag()
+
     override fun run() {
         Git.open(dir).use { git ->
             with(git.checkout()) {
@@ -123,12 +127,13 @@ class Release: CliktCommand(help = """
                 call()
             }
 
-            with(git.push()) {
-                isDryRun = true  // TESTING MODE
-                add(UNSTABLE_BRANCH)
-                add(RELEASE_BRANCH)
-                add(releaseTag)
-                call()
+            if (push) {
+                with(git.push()) {
+                    add(UNSTABLE_BRANCH)
+                    add(RELEASE_BRANCH)
+                    add(releaseTag)
+                    call()
+                }
             }
         }
     }
