@@ -37,7 +37,7 @@ class GitStatus: CliktCommand(help = """
     Print something from some git commit.
     
     (Proof of concept for git interface.)
-""".trimIndent()) {
+""") {
     val dir by argument(name="directory", help="the directory containing the module source").file(mustExist = true, canBeFile = false)
 
     override fun run() {
@@ -62,7 +62,7 @@ class Release: CliktCommand(help = """
     git checkout develop
     git merge master
     git commit -m "bump version"
-""".trimIndent()) {
+""") {
 
     val dir by argument(name="directory", help="the directory containing the module source").file(mustExist = true, canBeFile = false)
 
