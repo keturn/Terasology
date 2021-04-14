@@ -96,7 +96,7 @@ public class ObjectFieldMapTypeHandler<T> extends TypeHandler<T> {
                     continue;
                 }
 
-                TypeHandler handler = mappedFields.get(field);
+                TypeHandler<?> handler = mappedFields.get(field);
                 Optional<?> fieldValue = handler.deserialize(entry.getValue());
 
                 if (fieldValue.isPresent()) {
